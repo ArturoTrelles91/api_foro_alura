@@ -1,4 +1,4 @@
-package com.aluraforo.api.infra.exceptions.security;
+package com.aluraforo.api.infra.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,12 +10,8 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())         // APIs stateless
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                        // abretodo por ahora
-                )
-                .httpBasic(httpBasic -> {});          // o quítalo si no quieres basic
+                .csrf(csrf -> csrf.disable())  // Desactiva CSRF para APIs REST
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }
 }
