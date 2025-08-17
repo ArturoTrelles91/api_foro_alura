@@ -2,7 +2,8 @@ package com.aluraforo.api.infra.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.Date;
 public class JwtService {
 
     private final Algorithm algorithm;
+    private final JWTVerifier verifier;
 
     public JwtService(@Value("${api.security.token.secret}") String secret) {
         this.algorithm = Algorithm.HMAC256(secret);
+        this.verifier = JWT.require(algorithm).build();
     }
 
     public String generateToken(String subject) {
@@ -28,12 +31,8 @@ public class JwtService {
                 .sign(algorithm);
     }
 
-    /** Devuelve el username si es válido; si no, null (no lanza excepción). */
-    public String validateAndGetSubject(String token) {
-        try {
-            return JWT.require(algorithm).build().verify(token).getSubject();
-        } catch (JWTVerificationException e) {
-            return null;
-        }
+    public String verifyAndGetSubject(String token) {
+        DecodedJWT decoded = verifier.verify(token);
+        return decoded.getSubject();
     }
 }

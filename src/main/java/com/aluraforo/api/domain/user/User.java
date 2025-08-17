@@ -1,9 +1,10 @@
 package com.aluraforo.api.domain.user;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -11,44 +12,26 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor
 public class User implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Si tu columna en la tabla se llama distinto (p. ej. "email" o "login"),
-    // usa: @Column(name = "email", nullable = false, unique = true)
-    @Column(nullable = false, unique = true)
-    private String username;
+    @Column(nullable = false, unique = true, length = 100)
+    private String username;   // puedes usar email si quieres
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.USER;
+    private boolean enabled = true;
 
-    public enum Role { USER, ADMIN }
-
-    /* ==== UserDetails overrides ==== */
-
+    // ===== UserDetails =====
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Spring Security espera el prefijo "ROLE_"
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(); // sin roles por ahora
     }
-
-    @Override
-    public String getPassword() { return password; }
-
-    @Override
-    public String getUsername() { return username; }
 
     @Override
     public boolean isAccountNonExpired() { return true; }
@@ -60,5 +43,5 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() { return enabled; }
 }
