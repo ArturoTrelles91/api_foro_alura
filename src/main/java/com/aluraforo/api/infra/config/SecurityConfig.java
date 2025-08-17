@@ -1,4 +1,4 @@
-package com.aluraforo.api.infra.security;
+package com.aluraforo.api.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
