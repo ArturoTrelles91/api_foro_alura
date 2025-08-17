@@ -50,12 +50,27 @@ public class TopicService {
     @Transactional
     public Topic update(Long id, TopicUpdateRequest req) {
         Topic t = getById(id);
+
+        // Regla: no duplicados (título + mensaje) excluyendo el propio id
+        if (repo.existsByTitleAndMessageAndIdNot(req.title(), req.message(), id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Duplicate topic (same title and message)");
+        }
+
         t.setTitle(req.title());
         t.setMessage(req.message());
         t.setCourse(req.course());
-        // si tu DTO permite parciales, aquí harías null-checks antes de setear
         return t; // dirty checking
     }
+
+//    @Transactional
+//    public Topic update(Long id, TopicUpdateRequest req) {
+//        Topic t = getById(id);
+//        t.setTitle(req.title());
+//        t.setMessage(req.message());
+//        t.setCourse(req.course());
+//        // si tu DTO permite parciales, aquí harías null-checks antes de setear
+//        return t; // dirty checking
+//    }
 
     @Transactional
     public void delete(Long id) {
